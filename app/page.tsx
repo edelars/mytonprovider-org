@@ -6,11 +6,11 @@ import type { Provider } from "@/types/provider"
 import { fetchFiltersRange, fetchProviders } from "@/lib/api"
 import { FiltersData, FiltersRange } from "@/types/filters"
 import { useIsMobile } from "@/hooks/useIsMobile"
+import { usePageSize } from "@/hooks/usePageSize"
 import React from "react";
 
 const defaultField = "rating"
 const defaultDirection = "desc"
-const pageSize = 20
 
 const defaultFilters = {uptime_gt_percent: 20, uptime_lt_percent: 100} as FiltersData
 
@@ -19,6 +19,7 @@ const DynamicFilters = dynamic(() => import('@/components/filters').then(mod => 
 
 export default function Home() {
   const isMobile = useIsMobile()
+  const { pageSize, increasePageSize } = usePageSize()
   const [isShowFilters, setIsShowFilters] = useState(false);
   const [providers, setProviders] = useState<Provider[]>([])
   const [loading, setLoading] = useState(true)
@@ -32,8 +33,8 @@ export default function Home() {
 
   useEffect(() => {
     loadFiltersRange()
-    loadProviders(defaultField, defaultDirection, selectedFilters, 0, false)
-  }, [])
+    loadProviders(defaultField, defaultDirection, selectedFilters, 0, false, pageSize)
+  }, [pageSize])
 
   const loadFiltersRange = async() => {
     try {
@@ -107,9 +108,10 @@ export default function Home() {
 
   const loadMore = useCallback(() => {
     if (hasMore && !loading) {
-      loadProviders(sortField, sortDirection, selectedFilters, currentOffset, true)
+      const newPageSize = increasePageSize()
+      loadProviders(sortField, sortDirection, selectedFilters, 0, false, newPageSize)
     }
-  }, [hasMore, loading, sortField, sortDirection, selectedFilters, currentOffset, loadProviders])
+  }, [hasMore, loading, sortField, sortDirection, selectedFilters, increasePageSize, loadProviders])
 
   const handleFilterApply = useCallback((filters: FiltersData) => {
     setIsShowFilters(false)
