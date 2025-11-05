@@ -49,5 +49,6 @@ export interface Provider {
   max_bag_size_bytes: number
   reg_time: number
   is_send_telemetry: boolean
+  requestedAt?: number
   telemetry: Telemetry
 }

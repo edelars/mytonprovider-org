@@ -11,8 +11,15 @@ type ProviderDetailsProps = {
 export function ProviderDetails({ provider }: ProviderDetailsProps) {
     const t = provider.telemetry || {};
     const updatedSecAgo = useMemo(() => {
-        return timeDiff(provider.telemetry?.updated_at || 0)
-    }, [provider.telemetry?.updated_at]);
+        const telemetryUpdatedAt = provider.telemetry?.updated_at ?? 0
+        const requestedAt = provider.requestedAt ?? 0
+
+        if (!telemetryUpdatedAt || !requestedAt) {
+            return 0
+        }
+
+        return Math.max(requestedAt - telemetryUpdatedAt, 0)
+    }, [provider.telemetry?.updated_at, provider.requestedAt]);
 
     return (
         <>

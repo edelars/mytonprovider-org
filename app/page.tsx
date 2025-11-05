@@ -75,7 +75,13 @@ export default function Home() {
       if (data.errorMsg) {
         setError(data.errorMsg)
       } else {
-        const newProviders = data.data as Provider[] || []
+        const requestedAt = Math.floor(Date.now() / 1000)
+        const fetchedProviders = (data.data as Provider[]) || []
+        const newProviders = fetchedProviders.map(provider => ({
+          ...provider,
+          requestedAt,
+        }))
+
         if (append) {
           setProviders(prev => [...prev, ...newProviders])
         } else {
