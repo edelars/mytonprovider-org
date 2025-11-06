@@ -21,6 +21,17 @@ export function ProviderDetails({ provider }: ProviderDetailsProps) {
         return Math.max(requestedAt - telemetryUpdatedAt, 0)
     }, [provider.telemetry?.updated_at, provider.requestedAt]);
 
+    const lastOnlineSecAgo = useMemo(() => {
+        const lastOnlineCheckTime = provider.last_online_check_time ?? 0
+        const requestedAt = provider.requestedAt ?? 0
+
+        if (!lastOnlineCheckTime || !requestedAt) {
+            return 0
+        }
+
+        return Math.max(requestedAt - lastOnlineCheckTime, 0)
+    }, [provider.last_online_check_time, provider.requestedAt]);
+
     return (
         <>
             {/* Status Panel */}
@@ -89,6 +100,13 @@ export function ProviderDetails({ provider }: ProviderDetailsProps) {
                 provider.is_send_telemetry && updatedSecAgo != 0 && updatedSecAgo > 60 * 10 &&
                 <div className="flex justify-center">
                     <p className="text-sm text-red-500">Last telemetry update was more than <b>{printTime(updatedSecAgo, true)}</b> ago</p>
+                </div>
+            }
+
+            {
+                lastOnlineSecAgo != 0 && lastOnlineSecAgo > 60 * 10 &&
+                <div className="flex justify-center">
+                    <p className="text-sm text-red-500">Last seen online more than <b>{printTime(lastOnlineSecAgo, true)}</b> ago</p>
                 </div>
             }
 
