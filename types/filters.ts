@@ -34,6 +34,7 @@ export interface FiltersData {
   rating_gt: number | null, // float 
   rating_lt: number | null, // float
   location: string | null, // string
+  has_free_space: boolean | null, // boolean
   reg_time_days_gt: number | null, // int
   reg_time_days_lt: number | null, // int
   uptime_gt_percent: number | null, // float

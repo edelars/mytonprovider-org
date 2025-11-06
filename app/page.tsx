@@ -12,7 +12,7 @@ import React from "react";
 const defaultField = "rating"
 const defaultDirection = "desc"
 
-const defaultFilters = {uptime_gt_percent: 20, uptime_lt_percent: 100} as FiltersData
+const defaultFilters = {uptime_gt_percent: 20, uptime_lt_percent: 100, has_free_space: true, is_send_telemetry: null} as FiltersData
 
 const DynamicProviderTable = dynamic(() => import('@/components/provider-table').then(mod => mod.default), { ssr: false });
 const DynamicFilters = dynamic(() => import('@/components/filters').then(mod => mod.Filters), { ssr: false });

@@ -6,7 +6,7 @@ import { NumberField } from "./number-field";
 import { FieldGroup } from "./group";
 import { PopupList } from "./popup-list";
 
-const defaultFilters = {uptime_gt_percent: 20, uptime_lt_percent: 100} as FiltersData
+const defaultFilters = {uptime_gt_percent: 20, uptime_lt_percent: 100, has_free_space: true, is_send_telemetry: null} as FiltersData
 
 export type FiltersProps = {
   onApply: (filters: FiltersData) => void
@@ -87,6 +87,13 @@ export function Filters({ onApply, onReset, filtersRange, applyedFilters }: Filt
               resetTrigger={resetTrigger}
               maxHeight="max-h-48"
             />
+            <ThreeStateField
+              label="Only with free space:"
+              name="has_free_space"
+              value={filters.has_free_space}
+              onChange={handleTriStateChange}
+            />
+            <br />
             <NumberField
               label="Rating"
               nameFrom="rating_gt"
