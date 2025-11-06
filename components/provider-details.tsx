@@ -33,6 +33,11 @@ export function ProviderDetails({ provider }: ProviderDetailsProps) {
         return Math.max(requestedAt - lastOnlineCheckTime, 0)
     }, [provider.last_online_check_time, provider.requestedAt]);
 
+    const uptimeValue = provider.uptime !== null && provider.uptime !== undefined ? provider.uptime.toFixed(2) : null
+    const workingTimeValue = provider.working_time !== null && provider.working_time !== undefined ? printTime(provider.working_time) : null
+    const ratingValue = provider.rating !== null && provider.rating !== undefined ? provider.rating.toFixed(2) : null
+    const priceTonValue = provider.price !== null && provider.price !== undefined ? (provider.price / 1_000_000_000).toFixed(2) : null
+
     return (
         <>
             <StatusPanel provider={provider} />
@@ -57,11 +62,13 @@ export function ProviderDetails({ provider }: ProviderDetailsProps) {
                 <div>
                     <div className="flex items-center mb-2 text-gray-500 font-bold"><Info className="w-4 h-4 mr-2" />Provider</div>
                     {RenderField('Address', provider.address, '', `https://tonscan.org/address/${provider.address}`, provider.address)}
-                    {RenderField('Max Span', printTime(provider.max_span))}
-                    {RenderField('Min Span', printTime(provider.min_span))}
+                    {RenderField('Span', `${printTime(provider.min_span)} - ${printTime(provider.max_span)}`)}
                     {RenderField('Max Bag Size', printSpace(provider.max_bag_size_bytes))}
-                    {RenderField('Registration Time', printUnixTime(provider.reg_time))}
+                    {RenderField('Working Time', workingTimeValue)}
                     {RenderField('Location', provider.location ? `${provider.location.country}${provider.location.city && ', ' + provider.location.city}` : 'Unknown')}
+                    {RenderField('Uptime', uptimeValue, '%')}
+                    {RenderField('Rating', ratingValue)}
+                    {RenderField('Price', priceTonValue, 'TON')}
                 </div>
 
                 {/* Hardware */}
@@ -92,8 +99,8 @@ export function ProviderDetails({ provider }: ProviderDetailsProps) {
                     provider.is_send_telemetry &&
                     <div>
                         <div className="flex items-center mb-2 text-gray-500 font-bold"><Globe className="w-4 h-4 mr-2" />Network</div>
-                        {RenderField('Speedtest Download', t.speedtest_download ? t.speedtest_download / 1024**2 : 0, ' Mbps')}
-                        {RenderField('Speedtest Upload', t.speedtest_upload ? t.speedtest_upload / 1024**2 : 0, ' Mbps')}
+                        {RenderField('Speedtest Download', t.speedtest_download ? t.speedtest_download / 1024 ** 2 : 0, ' Mbps')}
+                        {RenderField('Speedtest Upload', t.speedtest_upload ? t.speedtest_upload / 1024 ** 2 : 0, ' Mbps')}
                         {RenderField('Speedtest Ping', t.speedtest_ping, '')}
                         {RenderField('Country', t.country)}
                         {RenderField('ISP', t.isp)}

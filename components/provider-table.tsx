@@ -67,7 +67,6 @@ export default function ProviderTable({ providers, loading, onSort, sortField, s
 
   return (
     <div>
-
       {/* Details modal */}
       <div className="fixed inset-0 z-50 overflow-hidden" hidden={selectedProvider === null}>
         <div className="absolute inset-0 flex items-center justify-center p-4 overflow-y-auto">
@@ -160,6 +159,7 @@ export default function ProviderTable({ providers, loading, onSort, sortField, s
           {safeProviders.map((provider, index) => (
             <React.Fragment key={provider.pubkey}>
               <tr key={provider.pubkey} className={`group ${index % 2 ? "" : "bg-gray-50"} ${selectedProvider?.pubkey === provider.pubkey ? "!bg-blue-100" : ""} hover:bg-blue-50 transition-colors duration-200`}>
+                {/* Public Key */}
                 <td>
                   <div className="flex items-center">
                     <span className="font-mono text-sm">{shortenString(provider.pubkey, 15)}</span>
@@ -175,6 +175,8 @@ export default function ProviderTable({ providers, loading, onSort, sortField, s
                     </button>
                   </div>
                 </td>
+                
+                {/* Location */}
                 <td>
                   {provider.location ? (
                     <div className="flex items-center">
@@ -184,20 +186,32 @@ export default function ProviderTable({ providers, loading, onSort, sortField, s
                     <span className="text-sm text-gray-500">Unknown</span>
                   )}
                 </td>
+
+                {/* Status */}
                 <td><StatusCell status={provider.status} ratio={provider.status_ratio} /></td>
+                
+                {/* Uptime */}
                 <td>{(provider.uptime).toFixed(2)} %</td>
+                
+                {/* Working Time */}
                 <td>{printTime(provider.working_time)}</td>
+                
+                {/* Rating */}
                 <td>
                   <div className="flex items-center">
                     <Star className="h-4 w-4 text-yellow-400 fill-transparent group-hover:fill-yellow-400 transition-all duration-200" />
                     <span className="ml-2">{provider.rating.toFixed(2)}</span>
                   </div>
                 </td>
+                
+                {/* Price */}
                 <td>
                   <div className="flex items-center">
                     {(provider.price / 1_000_000_000).toFixed(2)} TON
                   </div>
                 </td>
+                
+                {/* Details button */}
                 <td>
                   <button
                     onClick={() => setSelectedProvider(provider)}
@@ -218,10 +232,26 @@ export default function ProviderTable({ providers, loading, onSort, sortField, s
 function StatusCell({ status, ratio }: { status: number | null, ratio: number }) {
   const statusInfo = getProviderStatusInfo(status, ratio)
 
+  const indicatorClasses = {
+    gray: "bg-gray-400",
+    green: "bg-green-500 shadow-[0_4_4px_rgba(34,197,94,0.4)]",
+    yellow: "bg-yellow-500 shadow-[0_4_4px_rgba(234,179,8,0.4)]",
+    red: "bg-red-500 shadow-[0_4_4px_rgba(239,68,68,0.4)]",
+    orange: "bg-orange-700 shadow-[0_4_4px_rgba(249,115,22,0.4)]",
+  }
+
+  const labelClasses = {
+    gray: "text-gray-500",
+    green: "text-green-600",
+    yellow: "text-yellow-600",
+    red: "text-red-600",
+    orange: "text-orange-700",
+  }
+
   return (
     <div className="flex items-center gap-2">
-      <div className={`w-2 h-2 rounded-full ${statusInfo.indicatorClass} ${status === null ? 'animate-pulse' : ''}`}></div>
-      <span className={`text-xs font-medium ${statusInfo.labelClass}`}>
+      <div className={`w-2 h-2 rounded-full ${indicatorClasses[statusInfo.tone]}`}></div>
+      <span className={`text-xs font-medium ${labelClasses[statusInfo.tone]}`}>
         {statusInfo.label}
       </span>
       {
