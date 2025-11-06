@@ -1,8 +1,9 @@
-import { printSpace, printTime, printUnixTime, timeDiff } from "@/lib/utils";
-import type { Provider } from "@/types/provider"
-import { Cpu, Globe, Info, Server, BarChart2, Copy } from "lucide-react"
+import { printSpace, printTime, printUnixTime } from "@/lib/utils";
+import { type Provider } from "@/types/provider"
+import { Cpu, Globe, Info, Server, BarChart2 } from "lucide-react"
 import { useMemo } from "react";
 import { RenderField } from "./render-field";
+import { StatusPanel } from "./status-panel";
 
 type ProviderDetailsProps = {
     provider: Provider
@@ -34,67 +35,7 @@ export function ProviderDetails({ provider }: ProviderDetailsProps) {
 
     return (
         <>
-            {/* Status Panel */}
-            <div className="my-4 p-5 rounded-lg border-2 bg-white">
-                <div className="flex items-center justify-between">
-                    <span className="font-semibold text-gray-700">Status</span>
-                    <div className="flex items-center gap-2">
-                        {provider.status === null && (
-                            <>
-                                <div className="w-2 h-2 bg-gray-400 rounded-full animate-pulse"></div>
-                                <span className="text-sm text-gray-500 font-medium">No Data</span>
-                            </>
-                        )}
-                        {provider.status === 0 && (
-                            <>
-                                {provider.status_ratio < 0.75 ? (
-                                    <>
-                                        <div className="w-2 h-2 bg-red-500 rounded-full shadow-[0_0_6px_rgba(239,68,68,0.6)]"></div>
-                                        <span className="text-sm text-red-600 font-medium">Unstable ({(provider.status_ratio * 100).toFixed(1)}%)</span>
-                                    </>
-                                ) : provider.status_ratio < 0.99 ? (
-                                    <>
-                                        <div className="w-2 h-2 bg-yellow-500 rounded-full shadow-[0_0_6px_rgba(234,179,8,0.6)]"></div>
-                                        <span className="text-sm text-yellow-600 font-medium">Partial ({(provider.status_ratio * 100).toFixed(1)}%)</span>
-                                    </>
-                                ) : (
-                                    <>
-                                        <div className="w-2 h-2 bg-green-500 rounded-full shadow-[0_0_6px_rgba(34,197,94,0.6)]"></div>
-                                        <span className="text-sm text-green-600 font-medium">Stable ({provider.status_ratio === 1.0 ? '100%' : (provider.status_ratio * 100).toFixed(1) + '%'})</span>
-                                    </>
-                                )}
-                            </>
-                        )}
-                        {provider.status === 2 && (
-                            <>
-                                <div className="w-2 h-2 bg-orange-500 rounded-full shadow-[0_0_6px_rgba(249,115,22,0.6)]"></div>
-                                <span className="text-sm text-orange-600 font-medium">Invalid Data</span>
-                            </>
-                        )}
-                        {provider.status === 3 && (
-                            <>
-                                <div className="w-2 h-2 bg-red-500 rounded-full shadow-[0_0_6px_rgba(239,68,68,0.6)]"></div>
-                                <span className="text-sm text-red-600 font-medium">Not Actually Store</span>
-                            </>
-                        )}
-                        {provider.status === 500 && (
-                            <>
-                                <div className="w-2 h-2 bg-gray-700 rounded-full"></div>
-                                <span className="text-sm text-gray-700 font-medium">Not Accessible</span>
-                            </>
-                        )}
-                    </div>
-                </div>
-                
-                {/* Status Description */}
-                <div className="mt-2 text-sm text-gray-500">
-                    {provider.status === null && "Provider is not storing any data or we just don't check it yet"}
-                    {provider.status === 0 && "Status is calculated based on the percentage of files available for download from those stored by the provider"}
-                    {provider.status === 2 && "Provider contains invalid or corrupted data"}
-                    {provider.status === 3 && "Provider has some storage contracts, but not actually storing them"}
-                    {provider.status === 500 && "Provider was not accessible when we tried to check it"}
-                </div>
-            </div>
+            <StatusPanel provider={provider} />
 
             {
                 provider.is_send_telemetry && updatedSecAgo != 0 && updatedSecAgo > 60 * 10 &&

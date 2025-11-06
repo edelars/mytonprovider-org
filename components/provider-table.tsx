@@ -9,7 +9,7 @@ import {
   ArrowDown,
   InfoIcon,
 } from "lucide-react"
-import { shortenString, getSortIconType, copyToClipboard, printTime } from "@/lib/utils"
+import { shortenString, getSortIconType, copyToClipboard, printTime, getProviderStatusInfo } from "@/lib/utils"
 import { ProviderDetails } from "./provider-details"
 import HintWithIcon from "./hint"
 
@@ -67,16 +67,16 @@ export default function ProviderTable({ providers, loading, onSort, sortField, s
 
   return (
     <div>
-      
+
       {/* Details modal */}
       <div className="fixed inset-0 z-50 overflow-hidden" hidden={selectedProvider === null}>
         <div className="absolute inset-0 flex items-center justify-center p-4 overflow-y-auto">
           <div className="relative bg-white border shadow-2xl rounded-xl p-8 mt-4 mb-4 mx-auto max-w-5xl w-full max-h-[100vh] overflow-y-auto">
             <button
-                className="absolute top-4 right-4 z-10 flex items-center justify-center w-8 h-8 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors duration-200"
-                onClick={() => setSelectedProvider(null)}
+              className="absolute top-4 right-4 z-10 flex items-center justify-center w-8 h-8 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors duration-200"
+              onClick={() => setSelectedProvider(null)}
             >
-                <span className="text-gray-600 text-lg font-medium">✕</span>
+              <span className="text-gray-600 text-lg font-medium">✕</span>
             </button>
 
             {selectedProvider && (
@@ -95,9 +95,9 @@ export default function ProviderTable({ providers, loading, onSort, sortField, s
                   </button>
                 </p>
                 {/* <div className="mx-auto"> */}
-                  <div className="mx-auto">
-                    <ProviderDetails provider={selectedProvider} key={`${selectedProvider.pubkey}-details`}/>
-                  </div>
+                <div className="mx-auto">
+                  <ProviderDetails provider={selectedProvider} key={`${selectedProvider.pubkey}-details`} />
+                </div>
                 {/* </div> */}
               </div>
             )}
@@ -121,16 +121,16 @@ export default function ProviderTable({ providers, loading, onSort, sortField, s
                 {getSortIcon("location")}
               </div>
             </th>
-            <th onClick={() => {}}>
+            <th onClick={() => { }}>
               <div className="flex items-center">
                 Status
-                <HintWithIcon text="% of stored files accessible for download" maxWidth={24}/>
+                <HintWithIcon text="% of stored files accessible for download" maxWidth={24} />
               </div>
             </th>
             <th onClick={() => onSort("uptime")}>
               <div className="flex items-center">
                 Uptime
-                <HintWithIcon text="% of time online for uploads/contracts" maxWidth={24}/>
+                <HintWithIcon text="% of time online for uploads/contracts" maxWidth={24} />
                 {getSortIcon("uptime")}
               </div>
             </th>
@@ -149,7 +149,7 @@ export default function ProviderTable({ providers, loading, onSort, sortField, s
             <th onClick={() => onSort("price")}>
               <div className="flex items-center">
                 Price
-                <HintWithIcon text="per 200 GB per 30 days" maxWidth={18}/>
+                <HintWithIcon text="per 200 GB per 30 days" maxWidth={18} />
                 {getSortIcon("price")}
               </div>
             </th>
@@ -215,37 +215,14 @@ export default function ProviderTable({ providers, loading, onSort, sortField, s
   )
 }
 
-function StatusCell({status, ratio}: {status: number | null, ratio: number}) {
-  const getStatusInfo = () => {
-    switch (status) {
-      case null:
-        return { color: 'bg-gray-400', text: 'No Data', textColor: 'text-gray-500' }
-      case 0:
-        if (ratio < 0.8) {
-          return { color: 'bg-red-500 shadow-[0_0_4px_rgba(234,179,8,0.4)]', text: `Unstable`, textColor: 'text-red-600' }
-        } else if (ratio < 0.99) {
-          return { color: 'bg-yellow-500 shadow-[0_0_4px_rgba(234,179,8,0.4)]', text: `Partial`, textColor: 'text-yellow-600' }
-        }
-
-        return { color: 'bg-green-500 shadow-[0_0_4px_rgba(34,197,94,0.4)]', text: `Stable`, textColor: 'text-green-600' }
-      case 2:
-        return { color: 'bg-orange-500 shadow-[0_0_4px_rgba(249,115,22,0.4)]', text: 'Invalid', textColor: 'text-orange-600' }
-      case 3:
-        return { color: 'bg-red-500 shadow-[0_0_4px_rgba(239,68,68,0.4)]', text: 'Not Store', textColor: 'text-red-600' }
-      case 500:
-        return { color: 'bg-gray-700', text: 'Not Accessible', textColor: 'text-gray-700' }
-      default:
-        return { color: 'bg-gray-400', text: 'Unknown', textColor: 'text-gray-500' }
-    }
-  }
-
-  const statusInfo = getStatusInfo()
+function StatusCell({ status, ratio }: { status: number | null, ratio: number }) {
+  const statusInfo = getProviderStatusInfo(status, ratio)
 
   return (
     <div className="flex items-center gap-2">
-      <div className={`w-2 h-2 rounded-full ${statusInfo.color} ${status === null ? 'animate-pulse' : ''}`}></div>
-      <span className={`text-xs font-medium ${statusInfo.textColor}`}>
-        {statusInfo.text}
+      <div className={`w-2 h-2 rounded-full ${statusInfo.indicatorClass} ${status === null ? 'animate-pulse' : ''}`}></div>
+      <span className={`text-xs font-medium ${statusInfo.labelClass}`}>
+        {statusInfo.label}
       </span>
       {
         status == 0 && (
