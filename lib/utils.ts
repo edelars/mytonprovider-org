@@ -128,3 +128,87 @@ export function splitTextSmart(text: string, maxLen: number): string[] {
   if (current) lines.push(current)
   return lines
 }
+
+export type ProviderStatusTone = "gray" | "green" | "yellow" | "red" | "orange"
+
+export type ProviderStatusInfo = {
+  indicatorClass: string
+  label: string
+  labelClass: string
+  tone: ProviderStatusTone
+}
+
+export const getProviderStatusInfo = (
+  status: number | null,
+  ratio: number,
+): ProviderStatusInfo => {
+  if (status === null) {
+    return {
+      indicatorClass: "bg-gray-400",
+      label: "No Data",
+      labelClass: "text-gray-500",
+      tone: "gray",
+    }
+  }
+
+  if (status === 0) {
+    if (ratio < 0.8) {
+      return {
+        indicatorClass: "bg-red-500 shadow-[0_0_4px_rgba(234,179,8,0.4)]",
+        label: "Unstable",
+        labelClass: "text-red-600",
+        tone: "red",
+      }
+    }
+
+    if (ratio < 0.99) {
+      return {
+        indicatorClass: "bg-yellow-500 shadow-[0_0_4px_rgba(234,179,8,0.4)]",
+        label: "Partial",
+        labelClass: "text-yellow-600",
+        tone: "yellow",
+      }
+    }
+
+    return {
+      indicatorClass: "bg-green-500 shadow-[0_0_4px_rgba(34,197,94,0.4)]",
+      label: "Stable",
+      labelClass: "text-green-600",
+      tone: "green",
+    }
+  }
+
+  if ([101, 102, 103, 201, 202].includes(status)) {
+    return {
+      indicatorClass: "bg-gray-500 shadow-[0_0_4px_rgba(156,163,175,0.4)]",
+      label: "Unavailable",
+      labelClass: "text-gray-600",
+      tone: "gray",
+    }
+  }
+
+  if ([301, 302].includes(status)) {
+    return {
+      indicatorClass: "bg-red-500 shadow-[0_0_4px_rgba(239,68,68,0.4)]",
+      label: "Not Store",
+      labelClass: "text-red-600",
+      tone: "red",
+    }
+  }
+
+  if ([401, 402, 403].includes(status)) {
+    return {
+      indicatorClass: "bg-orange-700 shadow-[0_0_4px_rgba(249,115,22,0.4)]",
+      label: "No proofs",
+      labelClass: "text-orange-700",
+      tone: "orange",
+    }
+  }
+
+  return {
+    indicatorClass: "bg-gray-400",
+    label: "Unknown",
+    labelClass: "text-gray-500",
+    tone: "gray",
+  }
+}

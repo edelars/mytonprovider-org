@@ -34,6 +34,11 @@ export interface Location {
   time_zone: string
 }
 
+export interface StatusReasonStat {
+  reason: number
+  cnt: number
+}
+
 export interface Provider {
   status: number | null
   location: Location | null
@@ -48,6 +53,34 @@ export interface Provider {
   min_span: number
   max_bag_size_bytes: number
   reg_time: number
+  last_online_check_time: number
   is_send_telemetry: boolean
+  requestedAt?: number
   telemetry: Telemetry
+  statuses_reason_stats?: StatusReasonStat[]
+}
+
+export const nullStatusDescription = "We have not checked this provider yet"
+
+export const providerStatusDescriptions: Record<number, string> = {
+  // Validated
+  0: "Provider is working correctly and serving files as expected",
+  
+  // No IP found. DHT or provider off
+  101: "IP address cannot be found or this provider is unavailable",
+  102: "IP address cannot be found or this provider is unavailable",
+  103: "Connection timed out - provider is not responding",
+  
+  // Ports are closed
+  201: "Can not ping provider - it was offline or ports are closed",
+  202: "Storage contract issues detected",
+  
+  // Even no headers, doesn't know about file
+  301: "Have no headers information",
+  302: "Have no headers information",
+
+  // Cant proof storage or not store bag at all
+  401: "Can not proof files availability",
+  402: "Can not proof files availability",
+  403: "Can not proof files availability",
 }

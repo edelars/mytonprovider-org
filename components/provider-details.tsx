@@ -1,8 +1,9 @@
-import { printSpace, printTime, printUnixTime, timeDiff } from "@/lib/utils";
-import type { Provider } from "@/types/provider"
-import { Cpu, Globe, Info, Server, BarChart2, Copy } from "lucide-react"
+import { printSpace, printTime, printUnixTime } from "@/lib/utils";
+import { type Provider } from "@/types/provider"
+import { Cpu, Globe, Info, Server, BarChart2 } from "lucide-react"
 import { useMemo } from "react";
 import { RenderField } from "./render-field";
+import { StatusPanel } from "./status-panel";
 
 type ProviderDetailsProps = {
     provider: Provider
@@ -11,77 +12,47 @@ type ProviderDetailsProps = {
 export function ProviderDetails({ provider }: ProviderDetailsProps) {
     const t = provider.telemetry || {};
     const updatedSecAgo = useMemo(() => {
-        return timeDiff(provider.telemetry?.updated_at || 0)
-    }, [provider.telemetry?.updated_at]);
+        const telemetryUpdatedAt = provider.telemetry?.updated_at ?? 0
+        const requestedAt = provider.requestedAt ?? 0
+
+        if (!telemetryUpdatedAt || !requestedAt) {
+            return 0
+        }
+
+        return Math.max(requestedAt - telemetryUpdatedAt, 0)
+    }, [provider.telemetry?.updated_at, provider.requestedAt]);
+
+    const lastOnlineSecAgo = useMemo(() => {
+        const lastOnlineCheckTime = provider.last_online_check_time ?? 0
+        const requestedAt = provider.requestedAt ?? 0
+
+        if (!lastOnlineCheckTime || !requestedAt) {
+            return 0
+        }
+
+        return Math.max(requestedAt - lastOnlineCheckTime, 0)
+    }, [provider.last_online_check_time, provider.requestedAt]);
+
+    const uptimeValue = provider.uptime !== null && provider.uptime !== undefined ? provider.uptime.toFixed(2) : null
+    const workingTimeValue = provider.working_time !== null && provider.working_time !== undefined ? printTime(provider.working_time) : null
+    const ratingValue = provider.rating !== null && provider.rating !== undefined ? provider.rating.toFixed(2) : null
+    const priceTonValue = provider.price !== null && provider.price !== undefined ? (provider.price / 1_000_000_000).toFixed(2) : null
 
     return (
         <>
-            {/* Status Panel */}
-            <div className="my-4 p-5 rounded-lg border-2 bg-white">
-                <div className="flex items-center justify-between">
-                    <span className="font-semibold text-gray-700">Status</span>
-                    <div className="flex items-center gap-2">
-                        {provider.status === null && (
-                            <>
-                                <div className="w-2 h-2 bg-gray-400 rounded-full animate-pulse"></div>
-                                <span className="text-sm text-gray-500 font-medium">No Data</span>
-                            </>
-                        )}
-                        {provider.status === 0 && (
-                            <>
-                                {provider.status_ratio < 0.75 ? (
-                                    <>
-                                        <div className="w-2 h-2 bg-red-500 rounded-full shadow-[0_0_6px_rgba(239,68,68,0.6)]"></div>
-                                        <span className="text-sm text-red-600 font-medium">Unstable ({(provider.status_ratio * 100).toFixed(1)}%)</span>
-                                    </>
-                                ) : provider.status_ratio < 0.99 ? (
-                                    <>
-                                        <div className="w-2 h-2 bg-yellow-500 rounded-full shadow-[0_0_6px_rgba(234,179,8,0.6)]"></div>
-                                        <span className="text-sm text-yellow-600 font-medium">Partial ({(provider.status_ratio * 100).toFixed(1)}%)</span>
-                                    </>
-                                ) : (
-                                    <>
-                                        <div className="w-2 h-2 bg-green-500 rounded-full shadow-[0_0_6px_rgba(34,197,94,0.6)]"></div>
-                                        <span className="text-sm text-green-600 font-medium">Stable ({provider.status_ratio === 1.0 ? '100%' : (provider.status_ratio * 100).toFixed(1) + '%'})</span>
-                                    </>
-                                )}
-                            </>
-                        )}
-                        {provider.status === 2 && (
-                            <>
-                                <div className="w-2 h-2 bg-orange-500 rounded-full shadow-[0_0_6px_rgba(249,115,22,0.6)]"></div>
-                                <span className="text-sm text-orange-600 font-medium">Invalid Data</span>
-                            </>
-                        )}
-                        {provider.status === 3 && (
-                            <>
-                                <div className="w-2 h-2 bg-red-500 rounded-full shadow-[0_0_6px_rgba(239,68,68,0.6)]"></div>
-                                <span className="text-sm text-red-600 font-medium">Not Actually Store</span>
-                            </>
-                        )}
-                        {provider.status === 500 && (
-                            <>
-                                <div className="w-2 h-2 bg-gray-700 rounded-full"></div>
-                                <span className="text-sm text-gray-700 font-medium">Not Accessible</span>
-                            </>
-                        )}
-                    </div>
-                </div>
-                
-                {/* Status Description */}
-                <div className="mt-2 text-sm text-gray-500">
-                    {provider.status === null && "Provider is not storing any data or we just don't check it yet"}
-                    {provider.status === 0 && "Status is calculated based on the percentage of files available for download from those stored by the provider"}
-                    {provider.status === 2 && "Provider contains invalid or corrupted data"}
-                    {provider.status === 3 && "Provider has some storage contracts, but not actually storing them"}
-                    {provider.status === 500 && "Provider was not accessible when we tried to check it"}
-                </div>
-            </div>
+            <StatusPanel provider={provider} />
 
             {
                 provider.is_send_telemetry && updatedSecAgo != 0 && updatedSecAgo > 60 * 10 &&
                 <div className="flex justify-center">
                     <p className="text-sm text-red-500">Last telemetry update was more than <b>{printTime(updatedSecAgo, true)}</b> ago</p>
+                </div>
+            }
+
+            {
+                lastOnlineSecAgo != 0 && lastOnlineSecAgo > 60 * 10 &&
+                <div className="flex justify-center">
+                    <p className="text-sm text-red-500">Last seen online more than <b>{printTime(lastOnlineSecAgo, true)}</b> ago</p>
                 </div>
             }
 
@@ -91,11 +62,13 @@ export function ProviderDetails({ provider }: ProviderDetailsProps) {
                 <div>
                     <div className="flex items-center mb-2 text-gray-500 font-bold"><Info className="w-4 h-4 mr-2" />Provider</div>
                     {RenderField('Address', provider.address, '', `https://tonscan.org/address/${provider.address}`, provider.address)}
-                    {RenderField('Max Span', printTime(provider.max_span))}
-                    {RenderField('Min Span', printTime(provider.min_span))}
+                    {RenderField('Span', `${printTime(provider.min_span)} - ${printTime(provider.max_span)}`)}
                     {RenderField('Max Bag Size', printSpace(provider.max_bag_size_bytes))}
-                    {RenderField('Registration Time', printUnixTime(provider.reg_time))}
+                    {RenderField('Working Time', workingTimeValue)}
                     {RenderField('Location', provider.location ? `${provider.location.country}${provider.location.city && ', ' + provider.location.city}` : 'Unknown')}
+                    {RenderField('Uptime', uptimeValue, '%')}
+                    {RenderField('Rating', ratingValue)}
+                    {RenderField('Price', priceTonValue, 'TON')}
                 </div>
 
                 {/* Hardware */}
@@ -126,8 +99,8 @@ export function ProviderDetails({ provider }: ProviderDetailsProps) {
                     provider.is_send_telemetry &&
                     <div>
                         <div className="flex items-center mb-2 text-gray-500 font-bold"><Globe className="w-4 h-4 mr-2" />Network</div>
-                        {RenderField('Speedtest Download', t.speedtest_download ? t.speedtest_download / 1024**2 : 0, ' Mbps')}
-                        {RenderField('Speedtest Upload', t.speedtest_upload ? t.speedtest_upload / 1024**2 : 0, ' Mbps')}
+                        {RenderField('Speedtest Download', t.speedtest_download ? t.speedtest_download / 1024 ** 2 : 0, ' Mbps')}
+                        {RenderField('Speedtest Upload', t.speedtest_upload ? t.speedtest_upload / 1024 ** 2 : 0, ' Mbps')}
                         {RenderField('Speedtest Ping', t.speedtest_ping, '')}
                         {RenderField('Country', t.country)}
                         {RenderField('ISP', t.isp)}
