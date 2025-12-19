@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
 import { BarChart2, Cpu, Globe, Info, Server, SlidersHorizontal } from 'lucide-react';
 import { FiltersData, FiltersRange } from "@/types/filters";
+import { useTranslation } from "react-i18next";
 import { ThreeStateField } from "./tri-state-field";
 import { NumberField } from "./number-field";
 import { FieldGroup } from "./group";
@@ -16,6 +17,7 @@ export type FiltersProps = {
 }
 
 export function Filters({ onApply, onReset, filtersRange, applyedFilters }: FiltersProps) {
+  const { t } = useTranslation();
   const [filters, setFilters] = useState<FiltersData>(applyedFilters)
   const [resetTrigger, setResetTrigger] = useState(0) // when reset button pressed or we have new filtersRange
 
@@ -69,33 +71,33 @@ export function Filters({ onApply, onReset, filtersRange, applyedFilters }: Filt
         <div className="mb-4">
           <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
             <SlidersHorizontal className="h-5 w-5 text-blue-500" />
-            Filters
+            {t('filters.title')}
           </h2>
         </div>
         <div className="min-w-[400px]">
           <FieldGroup 
             icon={<Info className="w-4 h-4 mr-2" />} 
-            title="Provider"
+            title={t('filters.provider')}
             isExpandedByDefault={true}>
             <PopupList
-              label="Location"
+              label={t('filters.location')}
               name="location"
               options={filtersRange?.locations || []}
               value={filters.location || null}
               onChange={handlePopupListChange}
-              placeholder="Select location"
+              placeholder={t('filters.locationPlaceholder')}
               resetTrigger={resetTrigger}
               maxHeight="max-h-48"
             />
             <ThreeStateField
-              label="Only with free space:"
+              label={t('filters.onlyWithFreeSpace')}
               name="has_free_space"
               value={filters.has_free_space}
               onChange={handleTriStateChange}
             />
             <br />
             <NumberField
-              label="Rating"
+              label={t('filters.rating')}
               nameFrom="rating_gt"
               nameTo="rating_lt"
               min={0}
@@ -106,7 +108,7 @@ export function Filters({ onApply, onReset, filtersRange, applyedFilters }: Filt
               resetTrigger={resetTrigger}
             />
             <NumberField
-              label="Registration Time (days)"
+              label={t('filters.registrationTime')}
               nameFrom="reg_time_days_gt"
               nameTo="reg_time_days_lt"
               min={0}
@@ -118,7 +120,7 @@ export function Filters({ onApply, onReset, filtersRange, applyedFilters }: Filt
               resetTrigger={resetTrigger}
             />
             <NumberField
-              label="Uptime (%)"
+              label={t('filters.uptime')}
               nameFrom="uptime_gt_percent"
               nameTo="uptime_lt_percent"
               min={0}
@@ -129,7 +131,7 @@ export function Filters({ onApply, onReset, filtersRange, applyedFilters }: Filt
               resetTrigger={resetTrigger}
             />
             <NumberField
-              label="Price"
+              label={t('filters.price')}
               nameFrom="price_gt"
               nameTo="price_lt"
               min={0.0}
@@ -140,7 +142,7 @@ export function Filters({ onApply, onReset, filtersRange, applyedFilters }: Filt
               resetTrigger={resetTrigger}
             />
             <NumberField
-              label="Min Span (sec.)"
+              label={t('filters.minSpan')}
               nameFrom="min_span_gt"
               nameTo="min_span_lt"
               min={filtersRange?.min_span_min || 1}
@@ -152,7 +154,7 @@ export function Filters({ onApply, onReset, filtersRange, applyedFilters }: Filt
               resetTrigger={resetTrigger}
             />
             <NumberField
-              label="Max Span (sec.)"
+              label={t('filters.maxSpan')}
               nameFrom="max_span_gt"
               nameTo="max_span_lt"
               min={filtersRange?.max_span_min || 1}
@@ -164,7 +166,7 @@ export function Filters({ onApply, onReset, filtersRange, applyedFilters }: Filt
               resetTrigger={resetTrigger}
             />
             <NumberField
-              label="Max bag size (Mb)"
+              label={t('filters.maxBagSize')}
               nameFrom="max_bag_size_mb_gt"
               nameTo="max_bag_size_mb_lt"
               min={(filtersRange ? filtersRange.max_bag_size_mb_min : 0)}
@@ -178,10 +180,10 @@ export function Filters({ onApply, onReset, filtersRange, applyedFilters }: Filt
           </FieldGroup>
           <FieldGroup 
             icon={<Cpu className="w-4 h-4 mr-2" />}
-            title="Hardware"
+            title={t('filters.hardware')}
             isExpandedByDefault={false}>
             <NumberField
-              label="Total Provider Space (Gb)"
+              label={t('filters.totalProviderSpace')}
               nameFrom="total_provider_space_gt"
               nameTo="total_provider_space_lt"
               min={filtersRange?.total_provider_space_min || 10}
@@ -192,7 +194,7 @@ export function Filters({ onApply, onReset, filtersRange, applyedFilters }: Filt
               resetTrigger={resetTrigger}
             />
             <NumberField
-              label="Used Provider Space (Gb)"
+              label={t('filters.usedProviderSpace')}
               nameFrom="used_provider_space_gt"
               nameTo="used_provider_space_lt"
               min={0}
@@ -203,7 +205,7 @@ export function Filters({ onApply, onReset, filtersRange, applyedFilters }: Filt
               resetTrigger={resetTrigger}
             />
             <NumberField
-              label="CPU Number"
+              label={t('filters.cpuNumber')}
               nameFrom="cpu_number_gt"
               nameTo="cpu_number_lt"
               min={1}
@@ -213,15 +215,15 @@ export function Filters({ onApply, onReset, filtersRange, applyedFilters }: Filt
               setFilters={setFilters}
               resetTrigger={resetTrigger}
             />
-            <TextField label="CPU Name (contains):" name="cpu_name" />
+            <TextField label={t('filters.cpuName')} name="cpu_name" />
             <ThreeStateField
-              label="CPU is Virtual:"
+              label={t('filters.cpuIsVirtual')}
               name="cpu_is_virtual"
               value={filters.cpu_is_virtual}
               onChange={handleTriStateChange}
             />
             <NumberField
-              label="Total RAM (Gb)"
+              label={t('filters.totalRam')}
               nameFrom="total_ram_gt"
               nameTo="total_ram_lt"
               min={filtersRange?.total_ram_min || 1}
@@ -232,7 +234,7 @@ export function Filters({ onApply, onReset, filtersRange, applyedFilters }: Filt
               resetTrigger={resetTrigger}
             />
             <NumberField
-              label="Used RAM (%)"
+              label={t('filters.usedRamPercent')}
               nameFrom="usage_ram_percent_gt"
               nameTo="usage_ram_percent_lt"
               min={0}
@@ -245,10 +247,10 @@ export function Filters({ onApply, onReset, filtersRange, applyedFilters }: Filt
           </FieldGroup>
           <FieldGroup
             icon={<BarChart2 className="w-4 h-4 mr-2" />}
-            title="Benchmarks"
+            title={t('filters.benchmarks')}
             isExpandedByDefault={false}>
             <NumberField
-              label="Disk Read Speed (KiB/s)"
+              label={t('filters.diskReadSpeed')}
               nameFrom="benchmark_disk_read_speed_gt"
               nameTo="benchmark_disk_read_speed_lt"
               min={filtersRange ? filtersRange.benchmark_disk_read_speed_min / 1024 : 0}
@@ -259,7 +261,7 @@ export function Filters({ onApply, onReset, filtersRange, applyedFilters }: Filt
               resetTrigger={resetTrigger}
             />
             <NumberField
-              label="Disk Write Speed (KiB/s)"
+              label={t('filters.diskWriteSpeed')}
               nameFrom="benchmark_disk_write_speed_gt"
               nameTo="benchmark_disk_write_speed_lt"
               min={filtersRange ? filtersRange.benchmark_disk_write_speed_min / 1024 : 0}
@@ -272,10 +274,10 @@ export function Filters({ onApply, onReset, filtersRange, applyedFilters }: Filt
           </FieldGroup>
           <FieldGroup 
             icon={<Globe className="w-4 h-4 mr-2" />}
-            title="Network"
+            title={t('filters.network')}
             isExpandedByDefault={false}>
             <NumberField
-              label="Download Speed (Mbps)"
+              label={t('filters.downloadSpeed')}
               nameFrom="speedtest_download_speed_gt"
               nameTo="speedtest_download_speed_lt"
               min={filtersRange ? Math.floor(filtersRange.speedtest_download_min / 1000000) : 0}
@@ -286,7 +288,7 @@ export function Filters({ onApply, onReset, filtersRange, applyedFilters }: Filt
               resetTrigger={resetTrigger}
             />
             <NumberField
-              label="Upload Speed (Mbps)"
+              label={t('filters.uploadSpeed')}
               nameFrom="speedtest_upload_speed_gt"
               nameTo="speedtest_upload_speed_lt"
               min={filtersRange ? Math.floor(filtersRange.speedtest_upload_min / 1000000) : 0}
@@ -297,7 +299,7 @@ export function Filters({ onApply, onReset, filtersRange, applyedFilters }: Filt
               resetTrigger={resetTrigger}
             />
             <NumberField
-              label="Ping (ms)"
+              label={t('filters.ping')}
               nameFrom="speedtest_ping_gt"
               nameTo="speedtest_ping_lt"
               min={filtersRange?.speedtest_ping_min || 0}
@@ -307,26 +309,26 @@ export function Filters({ onApply, onReset, filtersRange, applyedFilters }: Filt
               setFilters={setFilters}
               resetTrigger={resetTrigger}
             />
-            <TextField label="Country (contains):" name="country" />
-            <TextField label="ISP (contains):" name="isp" />
+            <TextField label={t('filters.country')} name="country" />
+            <TextField label={t('filters.isp')} name="isp" />
           </FieldGroup>
           <FieldGroup
             icon={<Server className="w-4 h-4 mr-2" />}
-            title="Software"
+            title={t('filters.software')}
             isExpandedByDefault={false}>
-            <TextField label="Storage Git Hash" name="storage_git_hash" />
-            <TextField label="Provider Git Hash" name="provider_git_hash" />
+            <TextField label={t('filters.storageGitHash')} name="storage_git_hash" />
+            <TextField label={t('filters.providerGitHash')} name="provider_git_hash" />
             <ThreeStateField
-              label="Is Send Telemetry:"
+              label={t('filters.isSendTelemetry')}
               name="is_send_telemetry"
               value={filters.is_send_telemetry}
               onChange={handleTriStateChange}
             />
           </FieldGroup>
         </div>
-        <div className="flex gap-4 justify-end mt-4 sticky bottom-0 pt-4 z-10">
-          <button type="button" onClick={handleReset} className="px-4 py-2 border border-gray-300 rounded-full text-gray-600 hover:bg-gray-100">Reset</button>
-          <button type="submit" className="px-6 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors">Apply Filters</button>
+          <div className="flex gap-4 justify-end mt-4 sticky bottom-0 pt-4 z-10">
+          <button type="button" onClick={handleReset} className="px-4 py-2 border border-gray-300 rounded-full text-gray-600 hover:bg-gray-100">{t('buttons.reset')}</button>
+          <button type="submit" className="px-6 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors">{t('buttons.applyFilters')}</button>
         </div>
       </form>
     </div>

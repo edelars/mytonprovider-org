@@ -7,6 +7,7 @@ import { fetchFiltersRange, fetchProviders } from "@/lib/api"
 import { FiltersData, FiltersRange } from "@/types/filters"
 import { useIsMobile } from "@/hooks/useIsMobile"
 import { usePageSize } from "@/hooks/usePageSize"
+import { useTranslation } from "react-i18next";
 import React from "react";
 
 const defaultField = "rating"
@@ -30,6 +31,7 @@ export default function Home() {
   const [hasMore, setHasMore] = useState(false)
   const [currentOffset, setCurrentOffset] = useState(0)
   const [filtersRange, setFiltersRange] = React.useState<FiltersRange | null>(null)
+  const { t } = useTranslation();
 
   useEffect(() => {
     loadFiltersRange()
@@ -93,11 +95,11 @@ export default function Home() {
       }
     } catch (error) {
       console.error("Failed to fetch providers:", error)
-      setError("Failed to load providers. Please try again.")
+      setError(t('errors.failedToLoadProviders'))
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [pageSize, t])
 
   const handleSort = useCallback((field: string) => {
     var direction = "desc"
@@ -139,7 +141,7 @@ export default function Home() {
     return (
       <div className="mt-6 text-center space-y-3">
         <div className="text-sm text-gray-600">
-          Showing {providers.length} providers
+          {t("showingProviders", { count: providers.length })}
         </div>
         {hasMore && (
           <button
@@ -147,19 +149,19 @@ export default function Home() {
             disabled={loading}
             className="px-4 py-2 border border-gray-300 rounded-full text-gray-600 hover:bg-gray-100"
           >
-            {loading ? (
+                {loading ? (
               <div className="flex">
                 <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2"></div>
-                Loading...
+                {t('buttons.loading')}
               </div>
             ) : (
-              'Load More'
+              t('buttons.loadMore')
             )}
           </button>
         )}
       </div>
     )
-  }, [loading, providers.length, hasMore, loadMore])
+  }, [loading, providers.length, hasMore, loadMore, t])
 
   return (
     <div className="relative">
@@ -198,8 +200,8 @@ export default function Home() {
       <div className="space-y-12 min-w-80 py-12">
 
         <div className="text-center space-y-4 max-w-3xl mx-auto">
-          <h1 className="text-4xl font-bold">TON Storage Providers</h1>
-          <p className="text-xl text-gray-600">Find and compare storage providers on the TON network</p>
+          <h1 className="text-4xl font-bold">{t("mainTitle")}</h1>
+          <p className="text-xl text-gray-600">{t("mainDescription")}</p>
         </div>
 
         <div className="bg-white rounded-lg overflow-hidden">
@@ -217,7 +219,7 @@ export default function Home() {
                           setIsShowFilters(!isShowFilters)
                         }} 
                         className="mb-10 px-4 py-2 border border-gray-300 rounded-full text-gray-600 hover:bg-gray-100">
-                        Show filters
+                        {t('buttons.showFilters')}
                       </button>
                     </div>
 
