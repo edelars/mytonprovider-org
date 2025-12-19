@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react"
+import { useTranslation } from "react-i18next";
 import { ChevronDown, X } from "lucide-react"
 
 interface PopupListProps {
@@ -18,10 +19,12 @@ export function PopupList({
   value, 
   options, 
   onChange, 
-  placeholder = "Select an option...",
+  placeholder,
   resetTrigger,
   maxHeight = "max-h-48"
 }: PopupListProps) {
+  const { t } = useTranslation();
+  const resolvedPlaceholder = placeholder ?? t('popup.selectOption');
   const [isOpen, setIsOpen] = useState(false)
   const [localValue, setLocalValue] = useState(value || "")
   const dropdownRef = useRef<HTMLDivElement>(null)
@@ -72,7 +75,7 @@ export function PopupList({
           id={name}
           value={displayValue}
           onClick={() => setIsOpen(!isOpen)}
-          placeholder={placeholder}
+          placeholder={resolvedPlaceholder}
           readOnly={true}
           className={`
             w-full rounded px-3 py-2 pr-16 border border-gray-100
@@ -128,9 +131,9 @@ export function PopupList({
                   {option}
                 </button>
               ))
-            ) : (
+              ) : (
               <div className="px-3 py-2 text-sm text-gray-500 italic">
-                No options available
+                {t('popup.noOptions')}
               </div>
             )}
           </div>

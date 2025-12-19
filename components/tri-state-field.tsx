@@ -1,4 +1,5 @@
 import React from "react"
+import { useTranslation } from "react-i18next";
 
 interface TriStateFieldProps {
   label: string
@@ -8,8 +9,9 @@ interface TriStateFieldProps {
 }
 
 export function ThreeStateField({ label, name, value, onChange }: TriStateFieldProps) {
+  const { t } = useTranslation();
   const nextValue = value === null ? true : value === true ? false : null
-  const display = value === null ? "Any" : value ? "Yes" : "No"
+  const display = value === null ? t('triState.any') : value ? t('triState.yes') : t('triState.no')
   const color = value === null ? "bg-gray-200" : "bg-gray-300"
 
   return (

@@ -1,4 +1,6 @@
 import { useMemo, useState } from "react"
+import { useTranslation } from "react-i18next";
+import i18n from "i18next";
 import {
     nullStatusDescription,
     providerStatusDescriptions,
@@ -34,9 +36,7 @@ function resolveDescription(stats: StatusReasonStat[]) {
         dominantReason = stats[0].reason
     }
 
-    return (
-        providerStatusDescriptions[dominantReason] ?? `Unknown reason (${dominantReason})`
-    )
+    return providerStatusDescriptions[dominantReason] ?? null
 }
 
 const COUNT_TONE_STYLES: Record<ProviderStatusTone, { badge: string; text: string }> = {
@@ -76,7 +76,7 @@ const buildContractChecksBlock = (
     return (
         <div>
             {total === 0 ? (
-                <span className="ml-2 text-xs text-gray-400 italic">Not store</span>
+                <span className="ml-2 text-xs text-gray-400 italic">{i18n.t('status.notStored')}</span>
             ) : (
                 <div className="flex items-center">
                     <div className={`flex rounded-md ${validColor} px-2 h-6 items-center justify-center text-xs font-semibold ${textColor}`}>
@@ -97,6 +97,7 @@ type StatusPanelProps = {
 }
 
 export function StatusPanel({ provider }: StatusPanelProps) {
+    const { t } = useTranslation();
     const [showDetails, setShowDetails] = useState(false)
     const stats = useMemo<StatusReasonStat[]>(() => {
         return [...(provider.statuses_reason_stats ?? [])].sort((a, b) => b.cnt - a.cnt)
@@ -105,8 +106,11 @@ export function StatusPanel({ provider }: StatusPanelProps) {
     const totalCnt = useMemo(() => stats.reduce((acc, stat) => acc + stat.cnt, 0), [stats])
 
     const description = useMemo(
-        () => resolveDescription(stats),
-        [stats],
+        () => {
+            const key = resolveDescription(stats)
+            return key ? t(key as string) : null
+        },
+        [stats, t],
     )
 
     const hasChecks = totalCnt > 0
@@ -116,13 +120,13 @@ export function StatusPanel({ provider }: StatusPanelProps) {
             <div className="flex flex-col gap-3 p-5">
                 <div className="flex items-start justify-between gap-4">
                     <div>
-                        <span className="font-semibold text-gray-700">Status</span>
+                        <span className="font-semibold text-gray-700">{t('table.status')}</span>
                         <p className="mt-1 text-sm text-gray-500">{description}</p>
                     </div>
                     {hasChecks ? (
                         <div className="flex flex-col items-end gap-2 text-xs">
                             <div className="flex items-center gap-2">
-                                <span className="text-gray-500"> files available:</span>
+                                <span className="text-gray-500">{t('status.filesAvailable')}</span>
                                 {
                                     buildContractChecksBlock(provider.status, provider.statuses_reason_stats)
                                 }
@@ -131,11 +135,11 @@ export function StatusPanel({ provider }: StatusPanelProps) {
                                 onClick={() => setShowDetails((prev) => !prev)}
                                 className="text-sm text-gray-500 hover:text-gray-700 disabled:cursor-not-allowed"
                             >
-                                {showDetails ? "[ hide details ]" : "[ show details ]"}
+                                {showDetails ? t('status.hideDetails') : t('status.showDetails')}
                             </button>
                         </div>
                     ) : (
-                        <span className="text-xs text-gray-400">No checks yet</span>
+                        <span className="text-xs text-gray-400">{t('status.noChecksYet')}</span>
                     )}
                 </div>
 
@@ -145,7 +149,8 @@ export function StatusPanel({ provider }: StatusPanelProps) {
                             const percent = totalCnt ? (stat.cnt / totalCnt) * 100 : 0
                             const tone = stat.reason === 0 ? "green" : getProviderStatusInfo(stat.reason, percent / 100).tone
                             const background = TONE_COLORS[tone]
-                            const label = providerStatusDescriptions[stat.reason] ?? `Reason ${stat.reason}`
+                            const labelKey = providerStatusDescriptions[stat.reason]
+                            const label = labelKey ? t(labelKey) : t('status.unknownReason', { reason: stat.reason })
 
                             return (
                                 <div
@@ -157,8 +162,8 @@ export function StatusPanel({ provider }: StatusPanelProps) {
                                             className="inline-flex h-2.5 w-2.5 rounded-full"
                                             style={{ backgroundColor: background }}
                                         />
-                                        <span className="font-medium">
-                                            {stat.reason === 0 ? "All checks passed" : label}
+                                            <span className="font-medium">
+                                            {stat.reason === 0 ? t('status.allChecksPassed') : label}
                                         </span>
                                     </div>
                                     <span className="text-xs text-gray-500">
@@ -181,7 +186,9 @@ export function StatusPanel({ provider }: StatusPanelProps) {
                         const percent = (stat.cnt / totalCnt) * 100
                         const tone = stat.reason === 0 ? "green" : getProviderStatusInfo(stat.reason, percent / 100).tone
                         const background = TONE_COLORS[tone]
-                        const title = `${providerStatusDescriptions[stat.reason] ?? `Reason ${stat.reason}`} • ${stat.cnt} (${formatPercent(percent)})`
+                        const titleKey = providerStatusDescriptions[stat.reason]
+                        const titleLabel = titleKey ? t(titleKey) : t('status.unknownReason', { reason: stat.reason })
+                        const title = `${titleLabel} • ${stat.cnt} (${formatPercent(percent)})`
 
                         return (
                             <div

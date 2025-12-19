@@ -60,27 +60,27 @@ export interface Provider {
   statuses_reason_stats?: StatusReasonStat[]
 }
 
-export const nullStatusDescription = "We have not checked this provider yet"
+export const nullStatusDescription = "status.notChecked"
 
 export const providerStatusDescriptions: Record<number, string> = {
   // Validated
-  0: "Provider is working correctly and serving files as expected",
+  0: "status.reason.0",
   
   // No IP found. DHT or provider off
-  101: "IP address cannot be found or this provider is unavailable",
-  102: "IP address cannot be found or this provider is unavailable",
-  103: "Connection timed out - provider is not responding",
+  101: "status.reason.101",
+  102: "status.reason.102",
+  103: "status.reason.103",
   
   // Ports are closed
-  201: "Can not ping provider - it was offline or ports are closed",
-  202: "Storage contract issues detected",
+  201: "status.reason.201",
+  202: "status.reason.202",
   
   // Even no headers, doesn't know about file
-  301: "Have no headers information",
-  302: "Have no headers information",
+  301: "status.reason.301",
+  302: "status.reason.302",
 
   // Cant proof storage or not store bag at all
-  401: "Can not proof files availability",
-  402: "Can not proof files availability",
-  403: "Can not proof files availability",
+  401: "status.reason.401",
+  402: "status.reason.402",
+  403: "status.reason.403",
 }
