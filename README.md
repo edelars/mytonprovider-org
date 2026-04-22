@@ -6,31 +6,43 @@ Frontend for https://mytonprovider.org - a TON Storage providers aggregator. Bui
 
 ## Getting Started
 
-
 ### Installation
 
 ```bash
-# Install dependencies
 npm install
 ```
 
-### Development
+### Local Development
+
+Create a local env file so the frontend talks to the local backend instead of production:
 
 ```bash
-# Start development server
+cp .env.example .env.local
+```
+
+`.env.example` points to `http://localhost:9090`, which matches the backend local dev setup.
+
+Start the development server:
+
+```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-### Building for Production
+### Build
 
 ```bash
-# Build the application
 npm run build
 ```
 
-The build output will be available in the `.out` directory.
+The static export output is written to `out/`.
+
+### API Base URL
+
+- In local development, set `NEXT_PUBLIC_API_BASE_URL=http://localhost:9090`.
+- In production behind nginx, leave `NEXT_PUBLIC_API_BASE_URL` unset so the app uses same-origin `/api/...` requests.
+- If you deploy the frontend separately from the API, set `NEXT_PUBLIC_API_BASE_URL` at build time.
 
 
 ## Project Structure

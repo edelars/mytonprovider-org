@@ -2,8 +2,7 @@ import axios, { AxiosError } from "axios"
 import type { Provider, ApiResponse } from "@/types/provider"
 import { FiltersData, FiltersRange } from "@/types/filters";
 
-// const host = "http://localhost:9090"
-const host = "https://mytonprovider.org"
+const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? (process.env.NODE_ENV === "development" ? "http://localhost:9090" : "")
 
 export async function fetchFiltersRange(): Promise<ApiResponse> {
   var loading = false;
@@ -16,7 +15,7 @@ export async function fetchFiltersRange(): Promise<ApiResponse> {
       }
 
       loading = true
-      await axios.get(`${host}/api/v1/providers/filters`)
+      await axios.get(`${apiBaseUrl}/api/v1/providers/filters`)
       .then((response) => {
           loading = false
           filters = response.data.filters_range as FiltersRange;
@@ -54,7 +53,7 @@ export async function fetchProviders(
         }
 
         loading = true
-        await axios.post(`${host}/api/v1/providers/search`, {
+        await axios.post(`${apiBaseUrl}/api/v1/providers/search`, {
           filters: filters,
           sort: sortField
             ? { column: sortField, order: sortDirection }
